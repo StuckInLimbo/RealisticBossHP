@@ -1,0 +1,22 @@
+{
+  "Raider" : {
+    "Enabled":  true,
+    "Chest":    85,
+    "Head":     40,
+    "LeftArm":  60,
+    "LeftLeg":  65,
+    "RightArm": 60,
+    "RightLeg": 65,
+    "Stomach":  70
+  },
+  "Boss" : {
+    "Enabled":  true,
+    "Chest":    85,
+    "Head":     40,
+    "LeftArm":  70,
+    "LeftLeg":  75,
+    "RightArm": 70,
+    "RightLeg": 75,
+    "Stomach":  75
+  }
+}
