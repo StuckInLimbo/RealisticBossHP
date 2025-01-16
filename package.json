@@ -1,7 +1,7 @@
 {
     "name": "RealisticBossHP",
     "version": "1.0.0",
-    "sptVersion": "~3.9",
+    "sptVersion": "~3.10.5",
     "loadBefore": [],
     "loadAfter": [],
     "incompatibilities": [],
