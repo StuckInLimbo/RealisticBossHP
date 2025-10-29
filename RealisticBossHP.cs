@@ -66,7 +66,7 @@ public class RealisticBossHP(ISptLogger<RealisticBossHP> logger, DatabaseService
 		}
 		catch (Exception ex)
 		{
-			logger.Error($"Realistic Boss HP Failed to load config file: {ex}");
+			logger.Error($"[RealisticBossHP] Failed to load config file: {ex}");
 			return Task.CompletedTask;
 		}
 
@@ -79,7 +79,7 @@ public class RealisticBossHP(ISptLogger<RealisticBossHP> logger, DatabaseService
 			EditRaiderSettings();
 
 		// lets write a nice log message to the server console so players know our mod has made changes
-		logger.Success("Realistic Boss HP done!");
+		logger.Success("[RealisticBossHP] Mod loaded!");
 
 		// Inform server we have finished
 		return Task.CompletedTask;
@@ -96,13 +96,13 @@ public class RealisticBossHP(ISptLogger<RealisticBossHP> logger, DatabaseService
 		{
 			try
 			{
-				logger.Debug($"Editing boss {boss} HP settings.");
+				logger.Debug($"[RealisticBossHP] Editing boss {boss} HP settings.");
 				bots.Types.TryGetValue(boss, out var bossBot);
 				bossBot.BotHealth.BodyParts = bossBody;
 			}
 			catch (Exception ex)
 			{
-				logger.Error($"Realistic Boss HP Failed to edit boss {boss}: {ex}");
+				logger.Error($"[RealisticBossHP] Failed to edit boss {boss}: {ex}");
 			}
 		}
 	}
@@ -117,13 +117,13 @@ public class RealisticBossHP(ISptLogger<RealisticBossHP> logger, DatabaseService
 		foreach (var raider in RaiderIDs)
 		{
 			try {
-				logger.Debug($"Editing boss {raider} HP settings.");
+				logger.Debug($"[RealisticBossHP] Editing boss {raider} HP settings.");
 				bots.Types.TryGetValue(raider, out var raiderBot);
 				raiderBot.BotHealth.BodyParts = raiderBody;
 			}
 			catch (Exception ex)
 			{
-				logger.Error($"Realistic Boss HP Failed to edit raider {raider}: {ex}");
+				logger.Error($"[RealisticBossHP] Failed to edit raider {raider}: {ex}");
 			}
 		}
 	}
