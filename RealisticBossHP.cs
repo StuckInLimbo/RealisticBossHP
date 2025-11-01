@@ -29,6 +29,7 @@ public class RealisticBossHP(ISptLogger<RealisticBossHP> logger, DatabaseService
 		"bosssanitar",
 		"bosstagilla",
 		"bosstagillaagro", // Shadow of Tagilla
+		"infectedtagilla", // Infected Tagilla (?)
 		"bosszryachiy",
 		"followerbigpipe", 
 		"followerbirdeye",
@@ -100,7 +101,7 @@ public class RealisticBossHP(ISptLogger<RealisticBossHP> logger, DatabaseService
 				{
 					logger.Error($"[RealisticBossHP] Boss ID {boss} not found in database.");
 					continue;
-			}
+				}
 				foreach (var bodyPart in bossBot.BotHealth.BodyParts)
 				{
 					SetHealth(bodyPart.Head, HPConfig.Boss.Head);
@@ -132,7 +133,7 @@ public class RealisticBossHP(ISptLogger<RealisticBossHP> logger, DatabaseService
 				{
 					logger.Error($"[RealisticBossHP] Raider ID {raider} not found in database.");
 					continue;
-			}
+				}
 				foreach (var bodyPart in raiderBot.BotHealth.BodyParts)
 				{
 					SetHealth(bodyPart.Head, HPConfig.Raider.Head);
