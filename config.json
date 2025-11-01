@@ -1,19 +1,22 @@
 {
-  "raider_Enabled":   true,
-  "raider_Head":      40,
-  "raider_Chest":     85,
-  "raider_Stomach":   70,
-  "raider_LeftArm":   60,
-  "raider_RightArm":  60,
-  "raider_LeftLeg":   65,
-  "raider_RightLeg":  65,
-  
-  "boss_enabled":   true,
-  "boss_Head":      40,
-  "boss_Chest":     85,
-  "boss_Stomach":   75,
-  "boss_LeftArm":   70,
-  "boss_LeftLeg":   75,
-  "boss_RightArm":  70,
-  "boss_RightLeg":  75
+  "Boss": {
+    "Enabled": true,
+    "Head": 40,
+    "Chest": 85,
+    "Stomach": 75,
+    "LeftArm": 70,
+    "RightArm": 70,
+    "LeftLeg": 75,
+    "RightLeg": 75
+  },
+  "Raider": {
+    "Enabled": true,
+    "Head": 40,
+    "Chest": 85,
+    "Stomach": 75,
+    "LeftArm": 70,
+    "RightArm": 70,
+    "LeftLeg": 75,
+    "RightLeg": 75
+  }
 }

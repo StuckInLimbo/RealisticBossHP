@@ -1,6 +1,7 @@
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
@@ -8,8 +9,8 @@ using System.Reflection;
 
 namespace RealisticBossHP;
 
-// We want to load after PostDBModLoader is complete, so we set our type priority to that, plus 1.
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 1)]
+// We want to load after PostDBModLoader is complete, and after any other mod that could adjust bots.
+[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 999)]
 public class RealisticBossHP(ISptLogger<RealisticBossHP> logger, DatabaseService databaseService, ModHelper modHelper) : IOnLoad
 {
 	private Config HPConfig = new();
@@ -72,10 +73,10 @@ public class RealisticBossHP(ISptLogger<RealisticBossHP> logger, DatabaseService
 
 		// When SPT starts, it stores all the data found in (SPT_Data\Server\database) in memory
 		// We can use the 'databaseService' we injected to access this data, this includes files from EFT and SPT
-		if (HPConfig.boss_Enabled)
+		if (HPConfig.Boss.Enabled)
 			EditBossSettings();
 		
-		if (HPConfig.raider_Enabled)
+		if (HPConfig.Raider.Enabled)
 			EditRaiderSettings();
 
 		// lets write a nice log message to the server console so players know our mod has made changes
@@ -89,16 +90,27 @@ public class RealisticBossHP(ISptLogger<RealisticBossHP> logger, DatabaseService
 	{
 		var bots = databaseService.GetBots();
 
-		bots.Types.TryGetValue("bear", out var bearBot);
-		var bossBody = CreateBossBody(bearBot.BotHealth.BodyParts.ToArray());
-
 		foreach (var boss in BossIDs)
 		{
 			try
 			{
 				logger.Debug($"[RealisticBossHP] Editing boss {boss} HP settings.");
 				bots.Types.TryGetValue(boss, out var bossBot);
-				bossBot.BotHealth.BodyParts = bossBody;
+				if (bossBot == null)
+				{
+					logger.Error($"[RealisticBossHP] Boss ID {boss} not found in database.");
+					continue;
+			}
+				foreach (var bodyPart in bossBot.BotHealth.BodyParts)
+				{
+					SetHealth(bodyPart.Head, HPConfig.Boss.Head);
+					SetHealth(bodyPart.Chest, HPConfig.Boss.Chest);
+					SetHealth(bodyPart.Stomach, HPConfig.Boss.Stomach);
+					SetHealth(bodyPart.LeftArm, HPConfig.Boss.LeftArm);
+					SetHealth(bodyPart.RightArm, HPConfig.Boss.RightArm);
+					SetHealth(bodyPart.LeftLeg, HPConfig.Boss.LeftLeg);
+					SetHealth(bodyPart.RightLeg, HPConfig.Boss.RightLeg);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -111,15 +123,26 @@ public class RealisticBossHP(ISptLogger<RealisticBossHP> logger, DatabaseService
 	{
 		var bots = databaseService.GetBots();
 
-		bots.Types.TryGetValue("bear", out var bearBot);
-		var raiderBody = CreateRaiderBody(bearBot.BotHealth.BodyParts.ToArray());
-
 		foreach (var raider in RaiderIDs)
 		{
 			try {
 				logger.Debug($"[RealisticBossHP] Editing boss {raider} HP settings.");
 				bots.Types.TryGetValue(raider, out var raiderBot);
-				raiderBot.BotHealth.BodyParts = raiderBody;
+				if (raiderBot == null)
+				{
+					logger.Error($"[RealisticBossHP] Raider ID {raider} not found in database.");
+					continue;
+			}
+				foreach (var bodyPart in raiderBot.BotHealth.BodyParts)
+				{
+					SetHealth(bodyPart.Head, HPConfig.Raider.Head);
+					SetHealth(bodyPart.Chest, HPConfig.Raider.Chest);
+					SetHealth(bodyPart.Stomach, HPConfig.Raider.Stomach);
+					SetHealth(bodyPart.LeftArm, HPConfig.Raider.LeftArm);
+					SetHealth(bodyPart.RightArm, HPConfig.Raider.RightArm);
+					SetHealth(bodyPart.LeftLeg, HPConfig.Raider.LeftLeg);
+					SetHealth(bodyPart.RightLeg, HPConfig.Raider.RightLeg);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -128,48 +151,10 @@ public class RealisticBossHP(ISptLogger<RealisticBossHP> logger, DatabaseService
 		}
 	}
 
-	private IEnumerable<BodyPart> CreateBossBody(BodyPart[] bodyParts)
+	private void SetHealth(MinMax<double> bodyPart, double health)
 	{
-		return bodyParts.Select(bodyParts =>
-		{
-			bodyParts.Head.Min		= HPConfig.boss_Head;
-			bodyParts.Head.Max		= HPConfig.boss_Head;
-			bodyParts.Chest.Min		= HPConfig.boss_Chest;
-			bodyParts.Chest.Max		= HPConfig.boss_Chest;
-			bodyParts.Stomach.Min	= HPConfig.boss_Stomach;
-			bodyParts.Stomach.Max	= HPConfig.boss_Stomach;
-			bodyParts.LeftArm.Min	= HPConfig.boss_LeftArm;
-			bodyParts.LeftArm.Max	= HPConfig.boss_LeftArm;
-			bodyParts.RightArm.Min	= HPConfig.boss_RightArm;
-			bodyParts.RightArm.Max	= HPConfig.boss_RightArm;
-			bodyParts.LeftLeg.Min	= HPConfig.boss_LeftLeg;
-			bodyParts.LeftLeg.Max	= HPConfig.boss_LeftLeg;
-			bodyParts.RightLeg.Min	= HPConfig.boss_RightLeg;
-			bodyParts.RightLeg.Max	= HPConfig.boss_RightLeg;
-			return bodyParts;
-		});
-	}
-
-	private IEnumerable<BodyPart> CreateRaiderBody(BodyPart[] bodyParts)
-	{
-		return bodyParts.Select(bodyParts =>
-		{
-			bodyParts.Head.Min		= HPConfig.raider_Head;
-			bodyParts.Head.Max		= HPConfig.raider_Head;
-			bodyParts.Chest.Min		= HPConfig.raider_Chest;
-			bodyParts.Chest.Max		= HPConfig.raider_Chest;
-			bodyParts.Stomach.Min	= HPConfig.raider_Stomach;
-			bodyParts.Stomach.Max	= HPConfig.raider_Stomach;
-			bodyParts.LeftArm.Min	= HPConfig.raider_LeftArm;
-			bodyParts.LeftArm.Max	= HPConfig.raider_LeftArm;
-			bodyParts.RightArm.Min	= HPConfig.raider_RightArm;
-			bodyParts.RightArm.Max	= HPConfig.raider_RightArm;
-			bodyParts.LeftLeg.Min	= HPConfig.raider_LeftLeg;
-			bodyParts.LeftLeg.Max	= HPConfig.raider_LeftLeg;
-			bodyParts.RightLeg.Min	= HPConfig.raider_RightLeg;
-			bodyParts.RightLeg.Max	= HPConfig.raider_RightLeg;
-			return bodyParts;
-		});
+		bodyPart.Min = health;
+		bodyPart.Max = health;
 	}
 }
 
